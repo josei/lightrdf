@@ -1,0 +1,23 @@
+#!/usr/bin/ruby
+
+require 'rubygems'
+require 'lightrdf'
+require 'open-uri'
+
+if $*.size < 1
+  puts 'YARF Parser'
+  puts 'Usage: yarfp URI_or_file [output_format] [input_format] [namespaces]'
+  puts ''
+  puts 'Available formats: yarf (default input), ntriples (default output), rdfxml, turtle, rdfa, dot, png'
+  puts 'Namespaces: prefix1,uri1,prefix2,uri2... e.g.: sc,http://lab.gsi.dit.upm.es/scrappy/schema.rdf#'
+  exit
+else
+  uri = $*[0]
+  output_format = ($*[1] || :ntriples).to_sym
+  input_format = ($*[2] || :yarf).to_sym
+end
+
+$*[3].split(',').each_slice(2) { |prefix, url| Namespace prefix, url } if $*[3]
+
+data = open(uri).read
+puts RDF::Parser.parse(input_format.to_sym, data).serialize(output_format.to_sym)

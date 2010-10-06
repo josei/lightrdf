@@ -1,0 +1,163 @@
+= LightRDF
+
+* http://github.com/josei/lightrdf
+
+== DESCRIPTION:
+
+LightRDF is a gem that makes managing RDF data and graphs easily with a Ruby interface.
+
+== INSTALL:
+
+  gem install lightrdf
+
+The gem also requires Raptor library (in Debian systems: sudo aptitude install raptor-utils), which is used
+for outputting different RDF serialization formats.
+
+Additionally, PNG output of RDF graphs requires Graphviz (in Debian systems: sudo aptitude install graphviz).
+
+== RDF NODES:
+
+RDF nodes can be created using the Node method:
+
+  a = Node('http://www.example.com/ontology#test')
+
+Namespaces can be defined in order to simplify URI manipulation:
+
+  Namespace :ex,   'http://www.example.com/ontology#'
+  a = Node('ex:test')
+
+BNodes can be created too:
+
+  bnode = Node('_:bnode1')
+
+BNode identifiers can be created automatically if a nil ID is supplied:
+
+  bnode = Node(nil)
+  puts bnode   # Outputs: _:1
+
+LightRDF's nodes are Ruby hashes that are evaluated as equal whenever their IDs are the same:
+
+  Node('_:bnode1')   == Node('_:bnode1')   # => true
+  Node('ex:example') == Node('ex:example') # => true
+
+== RDF TRIPLES:
+
+Triples can be created by creating relations between nodes.
+
+  user = Node('ex:bob')
+  user.foaf::name = "Bob"
+
+If you want to get the property, an array will be returned, as many foaf::name's can be associated to it:
+
+  user.foaf::name # => ["Bob"]
+
+Therefore, we can add multiple values to a property:
+
+  user.foaf::weblog = Node('http://www.awesomeweblogfordummies.com')
+  user.foaf::weblog << Node('http://www.anotherawesomeweblogfordummies.com')
+  user.foaf::weblog.size # => 2
+  user.foaf::weblog?(Node('http://www.awesomeweblogfordummies.com'))  # => true
+
+== RDF GRAPHS:
+
+Every node has an associated graph, where all its relations are stored.
+A node's own graph can be accessed by using node.graph.
+
+Graphs can also be created and merged:
+
+  alice = Node("ex:alice")
+  alice.foaf::name = "Alice"
+
+  bob = Node("ex:bob")
+  bob.foaf::name = "Bob"
+
+  graph = Graph.new # Creates a new empty graph
+  graph << alice    # Adds alice to the graph
+  graph[Node("ex:alice")].foaf::name # => ["Alice"]
+  graph[Node("ex:bob")].foaf::name # => []
+
+  merged_graph = graph.merge(bob.graph)
+  graph[Node("ex:alice")].foaf::name # => ["Alice"]
+  graph[Node("ex:bob")].foaf::name # => ["Bob"]
+  merged_graph.triples.size # => 2  
+
+Also, queries for triples can be performed on a graph:
+
+  a = Node('ex:bob')
+  a.foaf::name = "Bob"
+  a.foaf::age = "24"
+
+  b = Node('ex:alice')
+  b.foaf::name = "Alice"
+  b.foaf::age = "22"
+
+  g = RDF::Graph.new
+  g << a
+  g << b
+
+  # Find a person with age == 22
+  g.find(nil, Node('foaf:age'), "22") # => [Node('ex:bob')]
+
+  # Find all predicates bob has
+  g.find(Node('ex:bob'), nil, []) # => [Node('foaf:name'), Node('foaf:age')]
+
+== PARSING AND SERIALIZING:
+
+LightRDF uses Raptor library internally to support many RDF formats. It also introduces
+YARF (Yet Another RDF Format) for serializing and parsing. A YARF document is as follows:
+
+  # Namespaces
+  rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns#
+  rdfs: http://www.w3.org/2000/01/rdf-schema#
+  ex: http://www.example.com/ontology#
+  foaf: http://xmlns.com/foaf/0.1/
+  geo: http://www.w3.org/2003/01/geo/wgs84_pos#
+
+  # RDF data
+  ex:bob:
+    rdf:type: rdf:Resource
+    foaf:name: "Bob"
+    foaf:weblog:
+      http://www.awesomeblog.com:
+        dc:title: "Awesome blog"
+      http://www.anotherawesomeblog.com:
+        dc:title: "Another awesome blog"
+    foaf:based_near:
+      _:spain:   # Blank node with a specified id
+        geo:lat: "37.0625"
+      *:         # Blank node with auto generated id
+        geo:lat: "55.701"
+        geo:lng: "12.552"
+  _:spain:       # Blank node with an id can be referenced in the doc
+    geo:lng: "-95.677068"
+    
+Documents in either yarf, rdf, json, ejson (for easyJSON), dot, png, ntriples format can be parsed into
+graphs and serialized using the parse and serialize methods:
+
+  graph = RDF::Parser.parse(:rdf, open('http://planetrdf.com/guide/rss.rdf').read) # Builds a graph
+  graph.serialize(:ntriples) # Outputs a string with triples
+
+== LICENSE:
+
+(The MIT License)
+
+Copyright (c) 2010 José Ignacio Fernández (joseignacio.fernandez <at> gmail.com)
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+'Software'), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
