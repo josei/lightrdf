@@ -1,22 +1,22 @@
 require 'rubygems'
-gem 'hoe', '>= 2.1.0'
-require 'hoe'
-require 'fileutils'
+require 'rake'
+require 'echoe'
 require './lib/lightrdf'
 
-Hoe.plugin :newgem
-# Hoe.plugin :website
-# Hoe.plugin :cucumberfeatures
-
-# Generate all the Rake tasks
-# Run 'rake -T' to see list of generated tasks (from gem root directory)
-$hoe = Hoe.spec 'lightrdf' do
-  self.developer 'José Ignacio', 'joseignacio.fernandez@gmail.com'
-  self.summary = "Light and easy library for managing RDF data and graphs"
-  self.post_install_message = '**Remember to install raptor RDF tools and (optionally for RDF PNG output) Graphviz**'
-  self.rubyforge_name       = self.name # TODO this is default value
-  self.extra_deps         = [['activesupport','>= 2.0.2']]
+Echoe.new('lightrdf', RDF::VERSION) do |p|
+  p.description    = "RDF library"
+  p.summary        = "Light and easy library for managing RDF data and graphs"
+  p.url            = "http://github.com/josei/lighrdf"
+  p.author         = "Jose Ignacio"
+  p.email          = "joseignacio.fernandez@gmail.com"
+  p.install_message = '**Remember to install raptor RDF tools and (optionally for RDF PNG output) Graphviz**'
+  p.ignore_pattern = ["pkg/*"]
+  p.development_dependencies = [['activesupport','>= 2.0.2']]
 end
 
-require 'newgem/tasks'
-Dir['tasks/**/*.rake'].each { |t| load t }
+Rake::RDocTask.new(:rdoc) do |rdoc|
+  rdoc.rdoc_files.include('README.rdoc').include('lib/**/*.rb')
+  rdoc.main = "README.rdoc"
+end
+
+Dir["#{File.dirname(__FILE__)}/tasks/*.rake"].sort.each

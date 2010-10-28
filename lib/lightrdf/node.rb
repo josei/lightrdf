@@ -1,8 +1,10 @@
 module RDF
   class NsProxy
-    undef :type
+    if RUBY_VERSION < '1.9'
+      undef :type
+      undef :id
+    end
     undef :class
-    undef :id
     def initialize ns, object
       @object = object
       @ns = ns
