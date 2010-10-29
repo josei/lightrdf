@@ -47,8 +47,8 @@ module RDF
       case format
       when :ntriples
         graph = RDF::Graph.new
-        graph.triples = text.split(".\n").map do |l|
-          s,p,o = l.strip.match(/(<.+>|".*"|_:.*)\W(<.+>|".*"|_:.*)\W(<.+>|".*"|_:.*)/).captures
+        graph.triples = text.split("\n").map do |l|
+          s, p, o = l.strip.match(/\A(<.+>|".*"|_:.*)\W(<.+>|".*"|_:.*)\W(<.+>|".*"|_:.*)\W\.\Z/).captures
           [parse_chunk_ntriples(s), parse_chunk_ntriples(p), parse_chunk_ntriples(o)]
         end
         graph
