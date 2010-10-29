@@ -1,3 +1,8 @@
+=== 0.1.1 2010-10-29
+
+* Corrected parsing of ntriples format
+* Fixes for Ruby 1.9
+
 === 0.1 2010-10-06
 
 * Initial release

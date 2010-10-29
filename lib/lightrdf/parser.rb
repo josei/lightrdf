@@ -48,7 +48,7 @@ module RDF
       when :ntriples
         graph = RDF::Graph.new
         graph.triples = text.split("\n").map do |l|
-          s, p, o = l.strip.match(/\A(<\S+>|".*"|_:\w+)\W(<\S+>|".*"|_:\w+)\W(<\S+>|".*"|_:\w+)\W\.\Z/).captures
+          s, p, o = l.strip.match(/\A(<\S+>|".*"|_:\w+)\s+(<\S+>|".*"|_:\w+)\s+(<\S+>|".*"|_:\w+)\s+\.\Z/).captures
           [parse_chunk_ntriples(s), parse_chunk_ntriples(p), parse_chunk_ntriples(o)]
         end
         graph
