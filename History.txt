@@ -1,3 +1,7 @@
+=== 0.1.2 2010-11-05
+
+* Fixed bug in node's hash method
+
 === 0.1.1 2010-10-29
 
 * Corrected parsing of ntriples format

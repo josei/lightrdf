@@ -51,7 +51,7 @@ module RDF
       b.is_a?(Node) and self.id == b.id
     end
     def hash # Hack for Ruby 1.8.6
-      id.hash + self.class.hash
+      id.hash ^ self.class.hash
     end
 
     def predicates
