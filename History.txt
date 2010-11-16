@@ -1,3 +1,7 @@
+=== 0.1.5 2010-11-16
+
+* Corrected problem when using Open3 and rapper
+
 === 0.1.4 2010-11-11
 
 * Corrected bug when parsing ntriples
