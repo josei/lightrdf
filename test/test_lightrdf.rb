@@ -5,6 +5,7 @@ class TestLightRDF < Test::Unit::TestCase
   def setup
     Namespace :ex,   'http://www.example.com/ontology#'
     Namespace :foaf, 'http://xmlns.com/foaf/0.1/'
+    Namespace :sc,   'http://lab.gsi.dit.upm.es/scrapping.rdf#'
   end
   
   def test_equality
@@ -121,5 +122,14 @@ foaf: http://xmlns.com/foaf/0.1/
     g << a
 
     assert 2, g.to_ntriples.split("\n").size
+  end
+
+  def test_repository
+    repository = RDF::Repository.new
+    graph = RDF::Graph.new([[Node("http://testuri.org"), Node('sc:extraction'), Node('sc:Empty')]])
+    context = "testcontext:#{Time.now.day.to_s}#{Time.now.hour.to_s}#{Time.now.min.to_s}"
+    repository.post_data(graph, context)
+    ext = repository.get_data(["%3C#{context}%3E"])
+    assert graph, ext
   end
 end
