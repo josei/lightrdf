@@ -15,6 +15,9 @@ for outputting different RDF serialization formats.
 
 Additionally, PNG output of RDF graphs requires Graphviz (in Debian systems: sudo aptitude install graphviz).
 
+Also, if you want to use the repository and Sesame functionality, Sesame must be installed.
+You can find furhter instructions in http://openrdf.org
+
 == RDF NODES:
 
 RDF nodes can be created using the Node method:
@@ -136,6 +139,33 @@ graphs and serialized using the parse and serialize methods:
 
   graph = RDF::Parser.parse(:rdf, open('http://planetrdf.com/guide/rss.rdf').read) # Builds a graph
   graph.serialize(:ntriples) # Outputs a string with triples
+
+== RDF REPOSITORY
+
+LightRDF can use a Sesame repository to save the RDF data.
+The Sesame options are configured when creating the repository
+  r_opt={"host"=>"http://localhost", "port"=>"8080", "repo"=>"men-ses",
+   "time"=>"15", "format"=>"ntriples"}
+   repo = RDF::Repository.new{r_opt}
+
+If any of the values is missing, the default value will be used.
+
+You have three ways of comunicating with Sesame:
+- You can ask Sesame for the list of all the context in the repository, by using the get_context Repository method.
+  
+  repo = RDF::Repository.new(r_opt)
+  repo.get_context
+  
+- You can ask Sesame for all the data in several contexts, using the get_data method, which returns a RDF Graph
+
+  repo = RDF::Repository.new(r_opt)
+  repo = repo.get_data(["test_context1", "test_context2"])
+  repo = repo.get_data(["test_context3"])
+  
+- You can ask Sesame for including data in a certain context, using the post_data method, passing a RDF Graph as a parameter.
+
+  repo = RDF::Repository.new(r_opt)
+  repo = repo.post_data(graph,context)
 
 == LICENSE:
 
