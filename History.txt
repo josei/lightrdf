@@ -1,3 +1,7 @@
+=== 0.1.6 2011-01-21
+
+* Added Sesame functionality
+
 === 0.1.5 2010-11-16
 
 * Corrected problem when using Open3 and rapper
