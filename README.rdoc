@@ -4,7 +4,7 @@
 
 == DESCRIPTION:
 
-LightRDF is a gem that makes managing RDF data and graphs easily with a Ruby interface.
+LightRDF is a gem that makes managing RDF data and graphs easy, with a Ruby interface.
 
 == INSTALL:
 
@@ -14,6 +14,8 @@ The gem also requires Raptor library (in Debian systems: sudo aptitude install r
 for outputting different RDF serialization formats.
 
 Additionally, PNG output of RDF graphs requires Graphviz (in Debian systems: sudo aptitude install graphviz).
+
+Also, if you want to use the repository and Sesame functionality, Sesame must be installed. You can find furhter instructions at http://openrdf.org
 
 == RDF NODES:
 
@@ -136,6 +138,40 @@ graphs and serialized using the parse and serialize methods:
 
   graph = RDF::Parser.parse(:rdf, open('http://planetrdf.com/guide/rss.rdf').read) # Builds a graph
   graph.serialize(:ntriples) # Outputs a string with triples
+
+== RDF REPOSITORY
+
+LightRDF can use a Sesame repository to save the RDF data.
+The Sesame options are configured when creating the repository
+  
+  repository = RDF::Repository.new :host=>"http://localhost", :port=>8080, :repository=>"memory"
+
+If any of the values is missing, the values above will be used by default.
+
+You have three ways of comunicating with Sesame:
+- You can ask Sesame for the list of all the contexts in the repository:
+  
+  repository = RDF::Repository.new
+  repository.contexts
+  
+- You can ask Sesame for all the data in several contexts, using the data method, which returns an RDF Graph:
+
+  repository = RDF::Repository.new
+  repository = repository.data "test:context1", "test:context2"
+  repository = repository.data "test:context3"
+  
+- You can ask Sesame for including data in a certain context, using the data= method, passing an RDF Graph as a parameter.
+
+  repository = RDF::Repository.new
+  context = "test:context4"
+  repository.data = graph, context # Associate graph to "test:context4"
+  repository.data = graph # In this case, data has no associated context
+  
+== CONTRIBUTORS:
+
+* José Ignacio Fernández
+
+* Alberto Mardomingo
 
 == LICENSE:
 

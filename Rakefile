@@ -11,7 +11,7 @@ Echoe.new('lightrdf', RDF::VERSION) do |p|
   p.email          = "joseignacio.fernandez@gmail.com"
   p.install_message = '**Remember to install raptor RDF tools and (optionally for RDF PNG output) Graphviz**'
   p.ignore_pattern = ["pkg/*"]
-  p.development_dependencies = [['activesupport','>= 2.0.2']]
+  p.dependencies   = [['activesupport','>= 2.0.2'], ['rest-client', '>=1.6.1'], ['nokogiri', '>= 1.4.1']]
 end
 
 Rake::RDocTask.new(:rdoc) do |rdoc|

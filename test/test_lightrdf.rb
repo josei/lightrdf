@@ -122,4 +122,29 @@ foaf: http://xmlns.com/foaf/0.1/
 
     assert 2, g.to_ntriples.split("\n").size
   end
+
+  def test_repository
+    repository = RDF::Repository.new
+    triple = [Node("http://testuri.org"), Node('rdf:type'), Node('rdf:Class')]
+    graph = RDF::Graph.new [triple]
+    context = "http://test_repository.org"
+    repository.data = graph, context
+    
+    # Check if the added data is there
+    assert_equal graph, repository.data(context)
+    
+    # Check if the triple is there when not filtering by context
+    assert repository.data.triples.include?(triple)
+  end
+  
+  def test_repository_contexts
+    repository = RDF::Repository.new
+    graph = RDF::Graph.new [[Node("http://testuri.org"), Node('rdf:type'), Node('rdf:Class')]]
+    context = "http://test_repository_contexts.org"
+    repository.data = graph, context
+    contexts = repository.contexts
+
+    # Check if the added context is there
+    assert contexts.include?("http://test_repository_contexts.org")
+  end
 end

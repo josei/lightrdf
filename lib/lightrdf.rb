@@ -11,8 +11,13 @@ require 'uri'
 require 'open3'
 require 'open-uri'
 require 'tmpdir'
+require 'rest-client'
+require 'yaml'
+require 'monitor'
+require 'nokogiri'
 
 require "lightrdf/quri"
 require "lightrdf/parser"
 require "lightrdf/graph"
 require "lightrdf/node"
+require "lightrdf/repository"
