@@ -36,10 +36,9 @@ module RDF
       when :rdf
         serialize(:rdfxml)
       else
-        stdin, stdout, stderr = Open3.popen3("rapper -q -i ntriples -o #{format} /dev/stdin")
-        stdin.puts serialize(:ntriples)
-        stdin.close
-        stdout.read
+        tmpfile = File.join(Dir.tmpdir, "rapper#{$$}#{Thread.current.object_id}")
+        File.open(tmpfile, 'w') { |f| f.write(serialize(:ntriples)) }
+        %x[rapper -q -i ntriples -o #{format} #{tmpfile} 2> /dev/null]
       end
     end
 
@@ -77,9 +76,9 @@ module RDF
           stdin, stdout, stderr = Open3.popen3("rapper -q -i #{format} -o ntriples /dev/stdin")
           stdin.puts text
           stdin.close
+          parse :ntriples, stdout.read
         rescue
         end
-        parse :ntriples, stdout.read
       end
     end
 
