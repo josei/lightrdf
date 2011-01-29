@@ -132,6 +132,8 @@ foaf: http://xmlns.com/foaf/0.1/
     
     # Check if the added data is there
     assert_equal graph, repository.data(context)
+    assert_equal graph, repository.data(context, context)
+    assert_equal graph, repository.data([context, context])
     
     # Check if the triple is there when not filtering by context
     assert repository.data.triples.include?(triple)
