@@ -13,10 +13,10 @@ module RDF
     # Extracts the data in sesame from the indicated repositories
     def data *contexts
       synchronize do
-        params = ("?" + contexts.map{|context| "context=%3C#{CGI::escape(context)}%3E"}*"&&" if contexts.empty?)
+        params = ("?" + contexts.map{|context| "context=%3C#{CGI::escape(context)}%3E"}*"&&" if !contexts.empty?)
 
         # Prepares the URL to request the data
-        url = "#{repository_statements_url(@options[:repository])}?#{params}"
+        url = "#{repository_statements_url(@options[:repository])}#{params}"
 
         # Asks for the data
         ntriples = RestClient.get url, :content_type=>content_type
