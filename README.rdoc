@@ -151,21 +151,21 @@ If any of the values is missing, the values above will be used by default.
 You have three ways of comunicating with Sesame:
 - You can ask Sesame for the list of all the contexts in the repository:
   
-  repository = RDF::Repository.new
-  repository.contexts
+    repository = RDF::Repository.new
+    repository.contexts
   
 - You can ask Sesame for all the data in several contexts, using the data method, which returns an RDF Graph:
 
-  repository = RDF::Repository.new
-  repository = repository.data "test:context1", "test:context2"
-  repository = repository.data "test:context3"
+    repository = RDF::Repository.new
+    repository = repository.data "test:context1", "test:context2"
+    repository = repository.data "test:context3"
   
 - You can ask Sesame for including data in a certain context, using the data= method, passing an RDF Graph as a parameter.
 
-  repository = RDF::Repository.new
-  context = "test:context4"
-  repository.data = graph, context # Associate graph to "test:context4"
-  repository.data = graph # In this case, data has no associated context
+    repository = RDF::Repository.new
+    context = "test:context4"
+    repository.data = graph, context # Associate graph to "test:context4"
+    repository.data = graph # In this case, data has no associated context
   
 == CONTRIBUTORS:
 
