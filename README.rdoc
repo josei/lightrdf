@@ -159,6 +159,7 @@ You have three ways of comunicating with Sesame:
     repository = RDF::Repository.new
     repository = repository.data "test:context1", "test:context2"
     repository = repository.data "test:context3"
+    repository = repository.data # Return all data in the repository
   
 - You can ask Sesame for including data in a certain context, using the data= method, passing an RDF Graph as a parameter.
 
