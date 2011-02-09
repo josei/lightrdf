@@ -34,11 +34,14 @@ module RDF
         stdin.close
         stdout.read
       when :rdf
-        serialize(:rdfxml)
+        serialize(:'rdfxml-abbrev')
       else
+        namespaces = if [:rdfxml, :'rdfxml-abbrev'].include?(format)
+          QURI.ns.map {|k,v| "-f 'xmlns:#{k}=#{v.inspect}'" } * " "
+        end
         tmpfile = File.join(Dir.tmpdir, "rapper#{$$}#{Thread.current.object_id}")
         File.open(tmpfile, 'w') { |f| f.write(serialize(:ntriples)) }
-        %x[rapper -q -i ntriples -o #{format} #{tmpfile} 2> /dev/null]
+        %x[rapper -q -i ntriples #{namespaces} -o #{format} #{tmpfile} 2> /dev/null]
       end
     end
 
@@ -72,13 +75,9 @@ module RDF
       when :ejson
         raise Exception, "eJSON format cannot be parsed (yet)"
       else
-        begin
-          stdin, stdout, stderr = Open3.popen3("rapper -q -i #{format} -o ntriples /dev/stdin")
-          stdin.puts text
-          stdin.close
-          parse :ntriples, stdout.read
-        rescue
-        end
+        tmpfile = File.join(Dir.tmpdir, "rapper#{$$}#{Thread.current.object_id}")
+        File.open(tmpfile, 'w') { |f| f.write text }
+        parse :ntriples, %x[rapper -q -i #{format} -o ntriples #{tmpfile} 2> /dev/null]
       end
     end
 

@@ -2,7 +2,7 @@ $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
 module RDF
-  VERSION = '0.1.7'
+  VERSION = '0.1.8'
 end
 
 require 'rubygems'

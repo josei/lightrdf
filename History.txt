@@ -1,4 +1,8 @@
-=== 0.1.6 2011-01-29
+=== 0.1.8 2011-02-09
+
+* Added support for RDF abbreviated syntax
+
+=== 0.1.7 2011-01-29
 
 * Corrected bug in Sesame URL construction
 
