@@ -11,7 +11,7 @@ module RDF
 
       case format.to_sym
       when :ntriples
-        triples.map { |s,p,o| "#{serialize_chunk_ntriples(s)} #{serialize_chunk_ntriples(p)} #{serialize_chunk_ntriples(o)} ." } * "\n"
+        triples.map { |s,p,o| "#{serialize_chunk_ntriples(s)} #{serialize_chunk_ntriples(p)} #{serialize_chunk_ntriples(o)} .\n" } * ''
       when :yarf
         ns = respond_to?(:ns) ? ID.ns.merge(self.ns) : ID.ns
         if header
@@ -202,8 +202,8 @@ module RDF
     end
 
     def serialize_chunk_ntriples n
-      if n.is_a? Node 
-        n.bnode? ? n.to_s : "<#{n}>"
+      if n.is_a? Symbol 
+        ID.bnode?(n) ? n.to_s : "<#{n}>"
       else
         ActiveSupport::JSON.encode(n)
       end

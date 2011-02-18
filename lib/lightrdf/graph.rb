@@ -59,7 +59,7 @@ module RDF
       result += matches.map {|t| t[2] } if object.nil?
       
       # Return nodes, not IDs
-      result.uniq.map { |id| id.is_a?(Symbol) ? Node(id) : id }
+      result.uniq.map { |id| id.is_a?(Symbol) ? Node(id, self) : id }
     end
   end
 end

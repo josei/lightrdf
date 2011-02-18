@@ -63,8 +63,8 @@ class TestLightRDF < Test::Unit::TestCase
     g << a
     g << b
 
-    assert_equal 1, g.find(nil, Node('foaf:age'), "22").size
-    assert_equal 2, g.find(Node('ex:bob'), nil, []).size
+    assert_equal [Node('ex:alice')], g.find(nil, Node('foaf:age'), "22")
+    assert_equal [Node('foaf:age'), Node('foaf:name')], g.find(Node('ex:bob'), nil, []).sort_by {|node| node.to_s}
   end
 
   def test_addition
@@ -113,7 +113,6 @@ foaf: http://xmlns.com/foaf/0.1/
   end
 
   def test_parsing_raptor
-    # Very naive testing -- it only helps to check that rapper is being executed
     assert RDF::Parser.parse(:rdf, open('http://planetrdf.com/guide/rss.rdf').read).serialize(:ntriples).split("\n").size > 10
   end
 
@@ -126,10 +125,22 @@ foaf: http://xmlns.com/foaf/0.1/
     g << a
 
     assert 2, g.to_ntriples.split("\n").size
-    assert 2, RDF::Parser.parse(:rdf, g.serialize(:rdf)).triples.size
-    assert 2, RDF::Parser.parse(:yarf, g.serialize(:yarf)).triples.size
   end
 
+  def test_serialization_raptor
+    a = Node('ex:bob')
+    a.foaf::name   = "Bob"
+    a.foaf::age    = "23"
+    a.ex::location = Node(nil)
+
+    g = RDF::Graph.new
+    g << a
+
+    assert_equal 3, RDF::Parser.parse(:yarf,   g.serialize(:yarf)  ).triples.size
+    assert_equal 3, RDF::Parser.parse(:rdfxml, g.serialize(:rdfxml)).triples.size
+    assert_equal 3, RDF::Parser.parse(:rdf,    g.serialize(:rdf)   ).triples.size
+  end
+  
   def test_repository
     repository = RDF::Repository.new
     triple = [Node("http://testuri.org"), Node('rdf:type'), Node('rdf:Class')]
