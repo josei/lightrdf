@@ -1,3 +1,7 @@
+=== 0.1.9 2011-02-18
+
+* Simplified design with much better performance
+
 === 0.1.8 2011-02-09
 
 * Added support for RDF abbreviated syntax
