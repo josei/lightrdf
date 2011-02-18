@@ -13,7 +13,7 @@ module RDF
       when :ntriples
         triples.map { |s,p,o| "#{serialize_chunk_ntriples(s)} #{serialize_chunk_ntriples(p)} #{serialize_chunk_ntriples(o)} ." } * "\n"
       when :yarf
-        ns = respond_to?(:ns) ? QURI.ns.merge(self.ns) : QURI.ns
+        ns = respond_to?(:ns) ? ID.ns.merge(self.ns) : ID.ns
         if header
           (ns.map{|k,v| "#{k}: #{v}\n"} * '') + serialize_yarf(nodes, ns)
         else
@@ -26,7 +26,7 @@ module RDF
         stdout.read
       when :png
         dot = serialize(:dot)
-        ns = respond_to?(:ns) ? QURI.ns.merge(self.ns) : QURI.ns
+        ns = respond_to?(:ns) ? ID.ns.merge(self.ns) : ID.ns
         ns.each { |k,v| dot.gsub!(v, "#{k}:") }
         dot.gsub!(/label=\"\\n\\nModel:.*\)\";/, '')
         stdin, stdout, stderr = Open3.popen3("dot -o/dev/stdout -Tpng")
@@ -37,7 +37,7 @@ module RDF
         serialize(:'rdfxml-abbrev')
       else
         namespaces = if [:rdfxml, :'rdfxml-abbrev'].include?(format)
-          QURI.ns.map {|k,v| "-f 'xmlns:#{k}=#{v.inspect}'" } * " "
+          ID.ns.map {|k,v| "-f 'xmlns:#{k}=#{v.inspect}'" } * " "
         end
         tmpfile = File.join(Dir.tmpdir, "rapper#{$$}#{Thread.current.object_id}")
         File.open(tmpfile, 'w') { |f| f.write(serialize(:ntriples)) }
@@ -134,7 +134,7 @@ module RDF
       [i, relations]
     end
 
-    def serialize_yarf nodes, ns=QURI.ns, level=0, already_serialized=[]
+    def serialize_yarf nodes, ns=ID.ns, level=0, already_serialized=[]
       text = ""
 
       for node in nodes
@@ -148,7 +148,7 @@ module RDF
           text += ":\n"
           node.predicates.each do |p, o| # Predicate and object
             text += " " *(level+1)*2
-            text += p.id.compressed(ns)
+            text += ID.compress(p.id, ns)
             text += ":"
             if o.size == 1 and (already_serialized.include?(o.first) or !o.first.is_a?(Node) or o.first.triples.size==0)
               text += " " + serialize_chunk_yarf(o.first, ns)
@@ -162,7 +162,7 @@ module RDF
       text
     end
     
-    def serialize_chunk_yarf node, ns=QURI.ns
+    def serialize_chunk_yarf node, ns=ID.ns
       if node.is_a?(Node)
         if node.bnode?
           if node.graph.find(nil, [], node).size > 1 # Only use a bnode-id if it appears again as object
@@ -171,7 +171,7 @@ module RDF
             "*"
           end
         else
-          node.id.compressed ns
+          ID.compress(node.id, ns)
         end
       else
         ActiveSupport::JSON.encode(node)

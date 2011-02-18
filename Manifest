@@ -8,6 +8,6 @@ lib/lightrdf/graph.rb
 lib/lightrdf/node.rb
 lib/lightrdf/parser.rb
 lib/lightrdf/repository.rb
-lib/lightrdf/quri.rb
+lib/lightrdf/id.rb
 test/test_helper.rb
 test/test_lightrdf.rb

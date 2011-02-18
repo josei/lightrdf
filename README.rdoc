@@ -56,7 +56,7 @@ If you want to get the property, an array will be returned, as many foaf::name's
 Therefore, we can add multiple values to a property:
 
   user.foaf::weblog = Node('http://www.awesomeweblogfordummies.com')
-  user.foaf::weblog << Node('http://www.anotherawesomeweblogfordummies.com')
+  user.foaf::weblog += [Node('http://www.anotherawesomeweblogfordummies.com')]
   user.foaf::weblog.size # => 2
   user.foaf::weblog?(Node('http://www.awesomeweblogfordummies.com'))  # => true
 

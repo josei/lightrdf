@@ -14,14 +14,19 @@ class TestLightRDF < Test::Unit::TestCase
    assert Node('_:2') == Node('_:2')
   end
 
-  def test_type
-    assert ID('rdf:type').is_a?(RDF::ID)
-    assert ID('_:bnode').is_a?(RDF::ID)
-    assert ID('http://www.google.com').is_a?(RDF::ID)
-    assert URI.parse('http://www.google.com').is_a?(RDF::ID)
-    assert ID('*').is_a?(RDF::ID)
+  def test_ids
+    assert ID('rdf:type') == :'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'
+    assert ID('_:bnode') == :'_:bnode'
+    assert ID('http://www.google.com') == :'http://www.google.com'
   end
 
+  def test_type
+    assert RDF::ID.uri?(ID('rdf:type'))
+    assert RDF::ID.uri?(ID('http://www.google.com'))
+    assert RDF::ID.bnode?(ID('*'))
+    assert RDF::ID.bnode?(ID('_:bnode'))
+  end
+  
   def test_random_node
     assert Node(nil).is_a?(RDF::Node)
   end
@@ -65,7 +70,7 @@ class TestLightRDF < Test::Unit::TestCase
   def test_addition
     a = Node('ex:bob')
     a.foaf::weblog = Node('http://www.awesomeweblogfordummies.com')
-    a.foaf::weblog << Node('http://www.anotherawesomeweblogfordummies.com')
+    a.foaf::weblog += [Node('http://www.anotherawesomeweblogfordummies.com')]
     assert_equal 2, a.foaf::weblog.size
     assert a.foaf::weblog?(Node('http://www.awesomeweblogfordummies.com'))
   end
@@ -121,6 +126,8 @@ foaf: http://xmlns.com/foaf/0.1/
     g << a
 
     assert 2, g.to_ntriples.split("\n").size
+    assert 2, RDF::Parser.parse(:rdf, g.serialize(:rdf)).triples.size
+    assert 2, RDF::Parser.parse(:yarf, g.serialize(:yarf)).triples.size
   end
 
   def test_repository

@@ -19,36 +19,36 @@ module RDF
       end
     end
   end
-
+  
   class Node < Hash
     include Parser
     attr_accessor :graph, :id
 
     def initialize id=nil, graph=nil
-      @id = ID::parse(id)
+      @id = ID(id)
       @graph = graph || Graph.new
       @graph << self
     end
 
     def method_missing method, *args
-      QURI.ns[method] ? NsProxy.new(method, self) : super
+      ID.ns[method] ? NsProxy.new(method, self) : super
     end
     def inspect; "<#{self.class} #{id} #{super}>"; end
-    def to_s; id.to_s; end
+    def to_s;   id.to_s; end
+    def to_sym; id;      end
 
     def [] name
-      self[Node(name)] = [] if super(Node(name)).nil?
-      super(Node(name)).map! {|n| n.is_a?(Node) ? @graph[n] : n}
+      ( super(ID(name)) || [] ).clone
     end
     def []= name, values
-      super(Node(name), [values].flatten.map { |node| node.is_a?(Node) ? @graph[node] : node })
+      super(ID(name), [values].flatten.map { |node| node.is_a?(Node) ? @graph[node] : node })
     end
 
-    def == b
-      eql? b
+    def == node
+      eql? node
     end
-    def eql? b
-      b.is_a?(Node) and self.id == b.id
+    def eql? node
+      self.class == node.class and self.id == node.id
     end
     def hash # Hack for Ruby 1.8.6
       id.hash ^ self.class.hash
@@ -59,7 +59,7 @@ module RDF
     end
 
     def triples
-      triples = []; each { |k, v| v.each { |o| triples << [self, Node(k), o] } }
+      triples = []; each { |p, v| v.each { |o| triples << [id, p, o.is_a?(Node) ? o.id : o] } }
       triples
     end
     
@@ -76,11 +76,11 @@ module RDF
     end
 
     def bnode?
-      id.is_a?(BNodeID)
+      ID.bnode?(id)
     end    
   end
 end
 
 def Node id, graph=nil
-  graph.nil? ? RDF::Node.new(id, graph) : graph[id]
+  graph ? graph[id] : RDF::Node.new(id)
 end

@@ -16,7 +16,7 @@ require 'yaml'
 require 'monitor'
 require 'nokogiri'
 
-require "lightrdf/quri"
+require "lightrdf/id"
 require "lightrdf/parser"
 require "lightrdf/graph"
 require "lightrdf/node"
