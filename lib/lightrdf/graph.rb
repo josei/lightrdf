@@ -41,6 +41,12 @@ module RDF
       values.select &block
     end
     
+    # This is equivalent to [], but tries to return a NodeProxy
+    def node id
+      node = self[id]
+      Node.classes[node.rdf::type.first].new node
+    end
+    
     def find subject, predicate, object
       # Convert nodes into IDs
       subject   = subject.id   if subject.is_a?(Node)

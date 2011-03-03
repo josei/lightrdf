@@ -22,6 +22,9 @@ module RDF
   
   class Node < Hash
     include Parser
+    @classes = {}
+    def self.classes; @classes; end
+    
     attr_accessor :graph, :id
 
     def initialize id=nil, graph=nil

@@ -103,6 +103,52 @@ Also, queries for triples can be performed on a graph:
   # Find all predicates bob has
   g.find(Node('ex:bob'), nil, []) # => [Node('foaf:name'), Node('foaf:age')]
 
+== INSTANTIATING OBJECTS:
+
+LightRDF allows defining a class hierarchy that is instantiated using RDF data. Simply match
+modules to prefix names and classes to RDF types and include RDF::NodeProxy:
+
+  module Foaf
+    class Person
+      include RDF::NodeProxy
+      # Optionally, you can specify the mapped URI:
+      # maps 'foaf:Person'
+      # or
+      # maps 'http://xmlns.com/foaf/0.1/Person'
+  
+      # Adds 1 year to the person's age
+      def happy_birthday!
+        foaf::age = (foaf::age.first.to_i + 1).to_s
+      end
+    end
+  end
+
+This class can be instantiated by passing an RDF node or a hash with predicates:
+
+  Foaf::Person.new.rdf::type # => [Node("http://xmlns.com/foaf/0.1/Person")]
+  
+  person_node = Node(nil)
+  person_node.rdf::type = Node('foaf:Person')
+  person_node.foaf::age = "19"
+  person = Foaf::Person.new(person_node)
+  person.foaf::age # => ["19"]
+  
+  person = Foaf::Person.new('foaf:age'=>"25")
+  person.happy_birthday!
+  person.foaf::age # => ["26"]
+
+Also, you can use Graph#node to get instances of class Person out of an RDF graph:
+  
+  graph       = RDF::Graph.new
+  person_node = Node(nil)
+  person_node.rdf::type = Node('foaf:Person')
+  person_node.foaf::age = "25"
+  graph << person_node
+  
+  person = graph.node(person_node)
+  person.happy_birthday!
+  person.foaf::age # => ["26"]
+
 == PARSING AND SERIALIZING:
 
 LightRDF uses Raptor library internally to support many RDF formats. It also introduces

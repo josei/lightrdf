@@ -2,7 +2,7 @@ $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
 module RDF
-  VERSION = '0.1.9'
+  VERSION = '0.2.0'
 end
 
 require 'rubygems'
@@ -20,4 +20,5 @@ require "lightrdf/id"
 require "lightrdf/parser"
 require "lightrdf/graph"
 require "lightrdf/node"
+require "lightrdf/node_proxy"
 require "lightrdf/repository"

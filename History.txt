@@ -1,3 +1,7 @@
+=== 0.2.0 2011-03-03
+
+* Instantiation of RDF data as Ruby objects (with methods and so on)
+
 === 0.1.9 2011-02-18
 
 * Simplified design with much better performance

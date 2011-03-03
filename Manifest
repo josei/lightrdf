@@ -6,6 +6,7 @@ bin/yarfp
 lib/lightrdf.rb
 lib/lightrdf/graph.rb
 lib/lightrdf/node.rb
+lib/lightrdf/node_proxy.rb
 lib/lightrdf/parser.rb
 lib/lightrdf/repository.rb
 lib/lightrdf/id.rb

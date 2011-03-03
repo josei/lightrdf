@@ -1,12 +1,27 @@
 require File.dirname(__FILE__) + '/test_helper.rb'
 
-class TestLightRDF < Test::Unit::TestCase
+Namespace :ex,   'http://www.example.com/ontology#'
+Namespace :foaf, 'http://xmlns.com/foaf/0.1/'
 
-  def setup
-    Namespace :ex,   'http://www.example.com/ontology#'
-    Namespace :foaf, 'http://xmlns.com/foaf/0.1/'
+module Foaf
+  class Person
+    include RDF::NodeProxy
+
+    # Adds 1 year to the person's age
+    def happy_birthday!
+      foaf::age = (foaf::age.first.to_i + 1).to_s
+    end
   end
-  
+end
+
+module Foaf
+  class Thing
+    include RDF::NodeProxy
+    maps 'http://xmlns.com/foaf/0.1/Agent'
+  end
+end
+
+class TestLightRDF < Test::Unit::TestCase
   def test_equality
    assert Node('_:something') == Node(Node('_:something'))
    assert ID('_:2') == ID('_:2')
@@ -166,5 +181,40 @@ foaf: http://xmlns.com/foaf/0.1/
 
     # Check if the added context is there
     assert contexts.include?("http://test_repository_contexts.org")
+  end
+
+  def test_instantiation
+    assert_equal Node("foaf:Person"), Foaf::Person.new.rdf::type.first
+    assert_equal Node("foaf:Agent"),  Foaf::Thing.new.rdf::type.first
+
+    person_node = Node(nil)
+    person_node.foaf::age = "19"
+    person = Foaf::Person.new(person_node)
+    assert_equal ["19"], person.foaf::age 
+  
+    person = Foaf::Person.new('foaf:age'=>"25", 'rdf:type'=>Node('rdf:Resource'))
+    person.happy_birthday!
+    assert_equal ["26"], person.foaf::age
+    assert_equal Node("foaf:Person"), person.rdf::type.first
+  end
+
+  def test_graph_instantiation
+    graph       = RDF::Graph.new
+    person_node = Node(nil)
+    person_node.rdf::type = Node('foaf:Person')
+    person_node.foaf::age = "25"
+    graph << person_node
+
+    person = graph.node(person_node)
+    person.happy_birthday!
+    assert_equal ["26"], person.foaf::age
+  end
+
+  def test_instance_equality
+    node   = Node(nil)
+    node.foaf::age = "25"
+    person1 = Foaf::Person.new(node)
+    person2 = Foaf::Person.new(node)
+    assert_equal person1.id, person2.id
   end
 end

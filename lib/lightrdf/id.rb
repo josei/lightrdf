@@ -5,6 +5,7 @@ module RDF
             :rdfs => 'http://www.w3.org/2000/01/rdf-schema#',
             :dc   => 'http://purl.org/dc/elements/1.1/',
             :owl  => 'http://www.w3.org/2002/07/owl#' }
+
     def self.ns;      @ns;      end
     def self.count;   @count;   end
     def self.count=c; @count=c; end
