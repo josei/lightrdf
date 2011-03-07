@@ -1,3 +1,7 @@
+=== 0.2.1 2011-03-07
+
+* Corrected bug when building a graph out of triples.
+
 === 0.2.0 2011-03-03
 
 * Instantiation of RDF data as Ruby objects (with methods and so on)
