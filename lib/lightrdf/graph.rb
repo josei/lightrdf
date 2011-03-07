@@ -35,7 +35,7 @@ module RDF
     end
     def triples= triples
       self.clear
-      triples.each { |s, p, o| self[s][p] += [o] }
+      triples.each { |s, p, o| self[s][p] += [o.is_a?(Symbol) ? Node(o) : o] }
     end
     def select &block
       values.select &block

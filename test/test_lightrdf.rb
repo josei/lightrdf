@@ -90,6 +90,14 @@ class TestLightRDF < Test::Unit::TestCase
     assert a.foaf::weblog?(Node('http://www.awesomeweblogfordummies.com'))
   end
 
+  def test_triples
+    a = Node('ex:bob')
+    a.foaf::weblog = Node('http://www.awesomeweblogfordummies.com')
+    g = RDF::Graph.new a.triples
+    p a.foaf::weblog
+    assert g[Node('ex:bob')].foaf::weblog?(Node('http://www.awesomeweblogfordummies.com'))
+  end
+  
   def test_graph_merge
     a = Node('ex:bob')
     a.foaf::name = "Bob"
