@@ -94,7 +94,6 @@ class TestLightRDF < Test::Unit::TestCase
     a = Node('ex:bob')
     a.foaf::weblog = Node('http://www.awesomeweblogfordummies.com')
     g = RDF::Graph.new a.triples
-    p a.foaf::weblog
     assert g[Node('ex:bob')].foaf::weblog?(Node('http://www.awesomeweblogfordummies.com'))
   end
   
@@ -166,9 +165,9 @@ foaf: http://xmlns.com/foaf/0.1/
   
   def test_repository
     repository = RDF::Repository.new
-    triple = [Node("http://testuri.org"), Node('rdf:type'), Node('rdf:Class')]
+    triple = [ID("http://testuri.org"), ID('rdf:type'), ID('rdf:Class')]
     graph = RDF::Graph.new [triple]
-    context = "http://test_repository.org"
+    context = "http://test_context.org"
     repository.data = graph, context
     
     # Check if the added data is there
