@@ -158,6 +158,7 @@ foaf: http://xmlns.com/foaf/0.1/
     g = RDF::Graph.new
     g << a
 
+    g.serialize(:ejson) # Just check that parsing doesn't crash
     assert_equal 3, RDF::Parser.parse(:yarf,   g.serialize(:yarf)  ).triples.size
     assert_equal 3, RDF::Parser.parse(:rdfxml, g.serialize(:rdfxml)).triples.size
     assert_equal 3, RDF::Parser.parse(:rdf,    g.serialize(:rdf)   ).triples.size

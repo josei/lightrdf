@@ -20,28 +20,23 @@ module RDF
           serialize_yarf(nodes, ns)
         end
       when :ejson
-        stdin, stdout, stderr = Open3.popen3("python -mjson.tool")
-        stdin.puts ActiveSupport::JSON.encode(serialize_ejson(nodes))
-        stdin.close
-        stdout.read
+        RDF::Parser.run "python -mjson.tool", ActiveSupport::JSON.encode(serialize_ejson(nodes))
       when :png
         dot = serialize(:dot)
         ns = respond_to?(:ns) ? ID.ns.merge(self.ns) : ID.ns
         ns.each { |k,v| dot.gsub!(v, "#{k}:") }
         dot.gsub!(/label=\"\\n\\nModel:.*\)\";/, '')
-        stdin, stdout, stderr = Open3.popen3("dot -o/dev/stdout -Tpng")
-        stdin.puts dot
-        stdin.close
-        stdout.read
+
+        RDF::Parser.run "dot -o/dev/stdout -Tpng", dot
       when :rdf
         serialize(:'rdfxml-abbrev')
       else
         namespaces = if [:rdfxml, :'rdfxml-abbrev'].include?(format)
           ID.ns.map {|k,v| "-f 'xmlns:#{k}=#{v.inspect}'" } * " "
         end
-        tmpfile = File.join(Dir.tmpdir, "rapper#{$$}#{Thread.current.object_id}")
-        File.open(tmpfile, 'w') { |f| f.write(serialize(:ntriples)) }
-        %x[rapper -q -i ntriples #{namespaces} -o #{format} #{tmpfile} 2> /dev/null]
+        tempfile = RDF::Parser.new_tempfile
+        File.open(tempfile, 'w') { |f| f.write(serialize(:ntriples)) }
+        %x[rapper -q -i ntriples #{namespaces} -o #{format} #{tempfile} 2> /dev/null]
       end
     end
 
@@ -75,9 +70,9 @@ module RDF
       when :ejson
         raise Exception, "eJSON format cannot be parsed (yet)"
       else
-        tmpfile = File.join(Dir.tmpdir, "rapper#{$$}#{Thread.current.object_id}")
-        File.open(tmpfile, 'w') { |f| f.write text }
-        parse :ntriples, %x[rapper -q -i #{format} -o ntriples #{tmpfile} 2> /dev/null]
+        tempfile = new_tempfile
+        File.open(tempfile, 'w') { |f| f.write text }
+        parse :ntriples, %x[rapper -q -i #{format} -o ntriples #{tempfile} 2> /dev/null]
       end
     end
 
@@ -218,6 +213,18 @@ module RDF
       else
         raise Exception, "Parsing error: #{c}"
       end
+    end
+    
+    def self.run program, input
+      tempfile = new_tempfile
+      File.open(tempfile, 'w') { |f| f.write(input) }
+      %x[#{program} < #{tempfile}]
+    end
+
+    def self.new_tempfile
+      @num_tempfile ||= 0
+      @num_tempfile  += 1
+      File.join(Dir.tmpdir, "lightrdf-#{@num_tempfile}-#{$$}#{Thread.current.object_id}")
     end
   end
 end
