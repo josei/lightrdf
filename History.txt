@@ -1,3 +1,7 @@
+=== 0.2.3 2011-03-14
+
+* Added all_triples method that returns triples recursively referenced by a node
+
 === 0.2.2 2011-03-10
 
 * Removed dependency open3 for Windows compatibility
