@@ -49,11 +49,12 @@ module RDF
     
     # This is equivalent to [], but tries to return a NodeProxy
     # It stores created objects in a pool
-    def node id
-      node = self[id]
-      @pool[node] ||= begin
-        type  = node.rdf::type.first
-        klass = Node.classes[type]
+    def node id, type=nil
+      id = ID(id)
+      @pool[id] ||= begin
+        node   = self[id]
+        type ||= node.rdf::type.first
+        klass  = Node.classes[type]
         raise Exception, "Unknown RDF-mapped type #{type}" unless klass
         klass.new(node)
       end

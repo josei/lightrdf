@@ -1,3 +1,8 @@
+=== 0.2.5 2011-03-16
+
+* Added pool of instantiated objects
+* Support to subclassing proxy nodes
+
 === 0.2.4 2011-03-16
 
 * Removed unused prefixes in RDF and YARF serializations
