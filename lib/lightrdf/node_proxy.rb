@@ -64,7 +64,7 @@ module RDF
     
     # Any other method (including any predicate) delegated to node
     def method_missing method, *args
-      @node.send method, args
+      @node.send method, *args
     end
   end
 end
