@@ -1,3 +1,7 @@
+=== 0.2.6 2011-03-16
+
+* Fix in graph consistency when building a graph from triples
+
 === 0.2.5 2011-03-16
 
 * Added pool of instantiated objects

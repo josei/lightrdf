@@ -95,6 +95,7 @@ class TestLightRDF < Test::Unit::TestCase
     a.foaf::weblog = Node('http://www.awesomeweblogfordummies.com')
     g = RDF::Graph.new a.triples
     assert g[Node('ex:bob')].foaf::weblog?(Node('http://www.awesomeweblogfordummies.com'))
+    assert_equal 1, [g[Node('ex:bob')].graph.object_id, g[Node('ex:bob')].foaf::weblog.map(&:graph).map(&:object_id)].flatten.uniq.size
   end
   
   def test_graph_merge
