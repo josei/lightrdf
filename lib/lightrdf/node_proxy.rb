@@ -4,10 +4,14 @@ module RDF
     def self.included base
       base.extend ClassMethods
       base.send :attr_reader, :node
-      base.maps base.to_s.gsub("::",":").gsub(/\A.*:/) { |a| a.downcase }
+      base.maps(base.to_s.gsub("::",":").gsub(/\A.*:/) { |a| a.downcase })
     end
     
     module ClassMethods
+      def inherited subclass
+        subclass.maps(subclass.to_s.gsub("::",":").gsub(/\A.*:/) { |a| a.downcase })
+      end
+      
       def maps id
         @rdf_type = Node(id)
         Node.classes.delete Node.classes.invert[self]

@@ -1,11 +1,17 @@
 module RDF
   class Graph < Hash
     include Parser
+    
     # Namespace set stored when parsing a file. Can be used for reference
     attr_accessor :ns
+    
+    # Set of initialized RDF::NodeProxy objects
+    attr_accessor :pool
+    
     def initialize triples=[]
       super(nil)
-      @ns = {}
+      @ns   = {}
+      @pool = {}
       self.triples = triples
     end
 
@@ -42,9 +48,15 @@ module RDF
     end
     
     # This is equivalent to [], but tries to return a NodeProxy
+    # It stores created objects in a pool
     def node id
       node = self[id]
-      Node.classes[node.rdf::type.first].new node
+      @pool[node] ||= begin
+        type  = node.rdf::type.first
+        klass = Node.classes[type]
+        raise Exception, "Unknown RDF-mapped type #{type}" unless klass
+        klass.new(node)
+      end
     end
     
     def find subject, predicate, object

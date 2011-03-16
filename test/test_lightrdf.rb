@@ -216,6 +216,7 @@ foaf: http://xmlns.com/foaf/0.1/
     person = graph.node(person_node)
     person.happy_birthday!
     assert_equal ["26"], person.foaf::age
+    assert_equal person.object_id, graph.node(person_node).object_id
   end
 
   def test_instance_equality
