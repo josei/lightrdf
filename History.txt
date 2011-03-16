@@ -1,3 +1,7 @@
+=== 0.2.4 2011-03-16
+
+* Removed unused prefixes in RDF and YARF serializations
+
 === 0.2.3 2011-03-14
 
 * Added all_triples method that returns triples recursively referenced by a node

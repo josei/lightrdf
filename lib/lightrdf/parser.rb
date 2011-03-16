@@ -15,7 +15,12 @@ module RDF
       when :yarf
         ns = respond_to?(:ns) ? ID.ns.merge(self.ns) : ID.ns
         if header
-          (ns.map{|k,v| "#{k}: #{v}\n"} * '') + serialize_yarf(nodes, ns)
+          used_ns = {}
+          triples.flatten.select { |node| node.is_a?(Symbol) and ID.uri?(node) }.each do |uri|
+            prefix = ID.compress(uri).split(':').first.to_sym
+            used_ns[prefix] = ns[prefix] if ns[prefix]
+          end
+          (used_ns.map{|k,v| "#{k}: #{v}\n"} * '') + serialize_yarf(nodes, ns)
         else
           serialize_yarf(nodes, ns)
         end
@@ -32,7 +37,13 @@ module RDF
         serialize(:'rdfxml-abbrev')
       else
         namespaces = if [:rdfxml, :'rdfxml-abbrev'].include?(format)
-          ID.ns.map {|k,v| "-f 'xmlns:#{k}=#{v.inspect}'" } * " "
+          ns = respond_to?(:ns) ? ID.ns.merge(self.ns) : ID.ns
+          used_ns = {}
+          triples.flatten.select { |node| node.is_a?(Symbol) and ID.uri?(node) }.each do |uri|
+            prefix = ID.compress(uri).split(':').first.to_sym
+            used_ns[prefix] = ns[prefix] if ns[prefix]
+          end
+          used_ns.map {|k,v| "-f 'xmlns:#{k}=#{v.inspect}'" } * " "
         end
         tempfile = RDF::Parser.new_tempfile
         File.open(tempfile, 'w') { |f| f.write(serialize(:ntriples)) }
