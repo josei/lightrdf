@@ -97,7 +97,67 @@ class TestLightRDF < Test::Unit::TestCase
     assert g[Node('ex:bob')].foaf::weblog?(Node('http://www.awesomeweblogfordummies.com'))
     assert_equal 1, [g[Node('ex:bob')].graph.object_id, g[Node('ex:bob')].foaf::weblog.map(&:graph).map(&:object_id)].flatten.uniq.size
   end
+
+  def test_node_merge
+    a = Node('ex:alice')
+    a.foaf::name = "Alice"
+    b = Node('ex:alice')
+    b.foaf::age = "23"
+
+    c = a.merge(b)
+
+    assert_not_same ["Alice"], b.foaf::name
+    assert_not_same ["23"], a.foaf::age
+    assert_equal ["Alice"], c.foaf::name
+    assert_equal ["23"], c.foaf::age
+  end
+
+  def test_node_merge!
+    a = Node('ex:alice')
+    a.foaf::name = "Alice"
+    b = Node('ex:alice')
+    b.foaf::age = "23"
+
+    a.merge!(b)
+
+    assert_equal ["Alice"], a.foaf::name
+    assert_equal ["23"], a.foaf::age
+  end
+
+  def test_recursive_add
+    a = Node('ex:alice')
+    a.foaf::name = "Alice"
+    b = Node("ex:bob", a.graph)
+    b.foaf::age = "26"
+    a.foaf::knows = b
+
+    g = RDF::Graph.new
+    g << a
+
+    assert_equal ["Alice"], g[Node("ex:alice")].foaf::name
+    assert_equal [Node("ex:bob")], g[Node("ex:alice")].foaf::knows
+    assert_equal ["26"], g[Node("ex:bob")].foaf::age
+  end
   
+  def test_graph_merge!
+    a = Node('ex:bob')
+    a.foaf::name = "Bob"
+
+    b = Node('ex:alice')
+    b.foaf::name = "Alice"
+
+    g1 = RDF::Graph.new
+    g2 = RDF::Graph.new
+    g1 << a
+    g2 << b
+
+    g2.merge!(g1)
+
+    assert_equal ["Alice"], g2[Node('ex:alice')].foaf::name
+    assert_equal ["Bob"], g2[Node('ex:bob')].foaf::name
+    assert_equal 2, g2.triples.size
+  end
+
   def test_graph_merge
     a = Node('ex:bob')
     a.foaf::name = "Bob"
@@ -112,8 +172,8 @@ class TestLightRDF < Test::Unit::TestCase
 
     g3 = g1.merge(g2)
 
-    assert ["Alice"], g3[Node('ex:Alice')].foaf::name
-    assert ["Bob"], g3[Node('ex:bob')].foaf::name
+    assert_equal ["Alice"], g3[Node('ex:alice')].foaf::name
+    assert_equal ["Bob"], g3[Node('ex:bob')].foaf::name
     assert_equal g1, a.graph
     assert_equal g2, b.graph
     assert_equal 2, g3.triples.size

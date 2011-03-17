@@ -1,3 +1,8 @@
+=== 0.3.0 2011-03-17
+
+* Recursive addition of nodes to a graph
+* merge and merge! for both nodes and graphs
+
 === 0.2.6 2011-03-16
 
 * Fix in graph consistency when building a graph from triples

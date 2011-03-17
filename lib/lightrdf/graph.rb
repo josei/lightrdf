@@ -1,6 +1,7 @@
 module RDF
   class Graph < Hash
     include Parser
+    alias :get :[]
     
     # Namespace set stored when parsing a file. Can be used for reference
     attr_accessor :ns
@@ -16,24 +17,28 @@ module RDF
     end
 
     def << node
-      self[node.id] = node
+      node.graph.each do |subid, subnode|
+        subnode.graph = self
+        old_subnode = get(subid)
+        self[subid] = old_subnode ? old_subnode.merge!(subnode) : subnode
+      end
+      old_node = get(node.id)
+      self[node.id] = old_node ? old_node.merge!(node) : node
     end
 
     def [] id
       super(ID(id)) || Node.new(id, self)
     end
-    def []= id, node
-      node.graph = self
-      super ID(id), node
-    end
     def nodes; values; end
     def inspect
       "{" + (values.map{|v| v.inspect} * ", ") + "}"
     end
+    def merge! graph
+      graph.values.each { |node| self << node }
+      self
+    end
     def merge graph
-      new_graph = Graph.new
-      new_graph.triples = triples + graph.triples
-      new_graph
+      RDF::Graph.new(triples + graph.triples)
     end
     def triples
       triples = []; values.each { |n| triples += n.triples }

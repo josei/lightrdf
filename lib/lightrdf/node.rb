@@ -30,7 +30,7 @@ module RDF
     def initialize id=nil, graph=nil
       @id = ID(id)
       @graph = graph || Graph.new
-      @graph << self
+      @graph[@id] = self
     end
 
     def method_missing method, *args
@@ -66,26 +66,25 @@ module RDF
       triples
     end
     
-    def all_triples done=[]
-      return [] if done.include?(self)
-      done << self
-      triples = self.triples
-      triples.map { |s,p,o| [s,o] }.flatten.uniq.each { |node| triples += graph[node].all_triples(done) }
-      triples
+    def all_triples
+      graph.triples
     end
     
     def merge node
-      new_node = clone
+      new_node = Node(id)
       (self.keys + node.keys).uniq.each do |k|
         new_node[k] = (node[k] + self[k]).uniq
       end
       new_node
     end
-
-    def clone
-      Node.new self
+    
+    def merge! node
+      (self.keys + node.keys).uniq.each do |k|
+        self[k] = (node[k] + self[k]).uniq
+      end
+      self
     end
-
+    
     def bnode?
       ID.bnode?(id)
     end    
