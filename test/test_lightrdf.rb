@@ -114,6 +114,8 @@ class TestLightRDF < Test::Unit::TestCase
 
     assert ["Alice"], g3[Node('ex:Alice')].foaf::name
     assert ["Bob"], g3[Node('ex:bob')].foaf::name
+    assert_equal g1, a.graph
+    assert_equal g2, b.graph
     assert_equal 2, g3.triples.size
   end
 
