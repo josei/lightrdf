@@ -1,3 +1,7 @@
+=== 0.3.1 2011-03-18
+
+* Fix in Node#all_triples method
+
 === 0.3.0 2011-03-17
 
 * Recursive addition of nodes to a graph

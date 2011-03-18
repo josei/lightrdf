@@ -66,8 +66,12 @@ module RDF
       triples
     end
     
-    def all_triples
-      graph.triples
+    def all_triples done=[]
+      return [] if done.include?(self)
+      done << self
+      triples = self.triples
+      triples.map { |s,p,o| [s,o] }.flatten.uniq.each { |node| triples += graph[node].all_triples(done) }
+      triples
     end
     
     def merge node

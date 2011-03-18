@@ -138,7 +138,27 @@ class TestLightRDF < Test::Unit::TestCase
     assert_equal [Node("ex:bob")], g[Node("ex:alice")].foaf::knows
     assert_equal ["26"], g[Node("ex:bob")].foaf::age
   end
-  
+
+  def test_all_triples
+    a = Node('ex:alice')
+    a.foaf::name = "Alice"
+    b = Node("ex:bob")
+    b.foaf::age = "26"
+    a.foaf::knows = b
+    c = Node("ex:charlie")
+    c.foaf::age = "27"
+
+    g = RDF::Graph.new
+    g << a
+    g << b
+    g << c
+
+    g.triples -= a.all_triples
+    
+    assert_equal 1, g.triples.size
+    assert_equal ["27"], g[Node("ex:charlie")].foaf::age
+  end
+
   def test_graph_merge!
     a = Node('ex:bob')
     a.foaf::name = "Bob"
