@@ -51,13 +51,13 @@ module RDF
       end
     end
 
-    def self.parse format, text
+    def self.parse format, text, uri=nil
       case format
       when :ntriples
         graph = RDF::Graph.new
         graph.triples = text.split("\n").select{|l| l.strip!=''}.map do |l|
-          s, p, o = l.strip.match(/\A(<\S+>|".*"|_:\w+)\s+(<\S+>|".*"|_:\w+)\s+(<\S+>|".*"|_:\w+)\s+\.\Z/).captures
-          [parse_chunk_ntriples(s), parse_chunk_ntriples(p), parse_chunk_ntriples(o)]
+          s, lang1, p, lang2, o, lang3 = l.strip.match(/\A(<\S+>|".*"(@\w+)?|_:\w+)\s+(<\S+>|".*"(@\w+)?|_:\w+)\s+(<\S+>|".*"(@\w+)?|_:\w+)\s+\.\Z/).captures
+          [parse_chunk_ntriples(s,uri), parse_chunk_ntriples(p,uri), parse_chunk_ntriples(o,uri)]
         end
         graph
       when :yarf
@@ -83,7 +83,7 @@ module RDF
       else
         tempfile = new_tempfile
         File.open(tempfile, 'w') { |f| f.write text }
-        parse :ntriples, %x[rapper -q -i #{format} -o ntriples #{tempfile} 2> /dev/null]
+        parse :ntriples, %x[rapper -q -i #{format} -o ntriples #{tempfile} 2> /dev/null], uri
       end
     end
 
@@ -215,12 +215,17 @@ module RDF
       end
     end
   
-    def self.parse_chunk_ntriples c
+    def self.parse_chunk_ntriples c, uri=nil
       case c[0..0]
-      when '<' then Node c[1..-2]
+      when '<' then
+        if uri
+          Node(URI::parse(uri).merge(c[1..-2]).to_s)
+        else
+          Node c[1..-2]
+        end
       when '_' then Node c
       when '"' then
-        ActiveSupport::JSON.decode(c)
+        ActiveSupport::JSON.decode(c.match(/\A(\".*\")(@\w+)?\Z/).captures.first)
       else
         raise Exception, "Parsing error: #{c}"
       end

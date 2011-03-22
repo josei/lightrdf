@@ -1,3 +1,8 @@
+=== 0.3.3 2011-03-22
+
+* Parsing of ntriples with literals with language annotations.
+* RDFa parsing support with URI as parsing parameter
+
 === 0.3.2 2011-03-22
 
 * Added RDF::Graph#== and RDF::Graph#contains methods that disambiguate bnodes
