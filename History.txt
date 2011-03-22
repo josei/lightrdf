@@ -1,3 +1,7 @@
+=== 0.3.2 2011-03-22
+
+* Added RDF::Graph#== and RDF::Graph#contains methods that disambiguate bnodes
+
 === 0.3.1 2011-03-18
 
 * Fix in Node#all_triples method

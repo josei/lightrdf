@@ -52,6 +52,34 @@ module RDF
       values.select &block
     end
     
+    # Returns true if the graph is contained into this one.
+    # It appropriately disambiguates blank nodes.
+    def contains? graph2
+      triples  = self.triples
+      triples2 = graph2.triples
+      return false if triples2.size > triples.size
+      
+      bnodes  = self.keys.select   { |node| ID::bnode?(node) }
+      bnodes2 = graph2.keys.select { |node| ID::bnode?(node) }
+
+      # Tries all the mappings between blank nodes
+      mappings = bnodes2.mappings(bnodes)
+
+      mappings.each do |mapping|
+        new_triples = triples2.map { |s,p,o| [ ID::bnode?(s) ? mapping[s] : s,
+                                               ID::bnode?(p) ? mapping[p] : p,
+                                               ID::bnode?(o) ? mapping[o] : o ]}
+        diff = triples - new_triples
+        return true if diff.size == triples.size - new_triples.size
+      end
+      
+      false
+    end
+    
+    def == graph2
+      triples.size == graph2.triples.size and contains?(graph2)
+    end
+    
     # This is equivalent to [], but tries to return a NodeProxy
     # It stores created objects in a pool
     def node id, type=nil

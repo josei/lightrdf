@@ -309,4 +309,23 @@ foaf: http://xmlns.com/foaf/0.1/
     person2 = Foaf::Person.new(node)
     assert_equal person1.id, person2.id
   end
+  
+  def test_graph_contains
+    graph1 = RDF::Graph.new [ [Node('ex:alice'), Node('foaf:age'), "24"]]
+    graph2 = RDF::Graph.new [ [Node('ex:alice'), Node('foaf:knows'), Node('_:bnode392')],
+                              [Node('_:bnode392'), Node('foaf:name'), "Bob"] ]
+    graph3 = RDF::Graph.new [ [Node('ex:alice'), Node('foaf:knows'), Node('_:bnode965')],
+                              [Node('_:bnode965'), Node('foaf:name'), "Bob"] ]
+    graph4 = RDF::Graph.new [ [Node('ex:alice'), Node('foaf:knows'), Node('_:bnode392')],
+                              [Node('_:bnode392'), Node('foaf:name'), "Robert"] ]
+    graph5 = RDF::Graph.new [ [Node('ex:alice'), Node('foaf:knows'), Node('_:bnode390')],
+                              [Node('_:bnode390'), Node('foaf:name'), "Robert"],
+                              [Node('ex:alice'), Node('foaf:knows'), Node('_:bnode967')],
+                              [Node('_:bnode967'), Node('foaf:name'), "Bob"]]
+    assert !graph1.contains?(graph2)
+    assert graph2.contains?(graph3)
+    assert !graph2.contains?(graph4)
+    assert graph2 != graph4
+    assert graph5.contains?(graph2)
+  end
 end
