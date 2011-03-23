@@ -70,7 +70,7 @@ module RDF
       return [] if done.include?(self)
       done << self
       triples = self.triples
-      triples.map { |s,p,o| [s,o] }.flatten.uniq.each { |node| triples += graph[node].all_triples(done) }
+      triples.map { |s,p,o| [s,o] }.flatten.uniq.each { |node| triples += graph[node].all_triples(done) if node.is_a?(Symbol) }
       triples
     end
     
