@@ -1,3 +1,7 @@
+=== 0.3.4 2011-03-23
+
+* Fix in all_triples method. It crashed if the node had empty literals.
+
 === 0.3.3 2011-03-22
 
 * Parsing of ntriples with literals with language annotations.
