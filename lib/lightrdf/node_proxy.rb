@@ -37,7 +37,7 @@ module RDF
     
     # Equality method delegated to node
     def == other_node
-      @node.eql? other_node.node
+      eql? other_node
     end
     # Equality method delegated to node
     def eql? other_node

@@ -91,7 +91,11 @@ module RDF
     
     def bnode?
       ID.bnode?(id)
-    end    
+    end
+    
+    def proxy
+      graph.node(self)
+    end
   end
 end
 

@@ -1,3 +1,8 @@
+=== 0.3.5 2011-03-24
+
+* New method RDF::Node#proxy, that returns a NodeProxy.
+* Fix in RDF::Node#==.
+
 === 0.3.4 2011-03-23
 
 * Fix in all_triples method. It crashed if the node had empty literals.
