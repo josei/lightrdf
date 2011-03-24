@@ -93,8 +93,8 @@ module RDF
       ID.bnode?(id)
     end
     
-    def proxy
-      graph.node(self)
+    def proxy type=nil
+      graph.node(self, type)
     end
   end
 end
