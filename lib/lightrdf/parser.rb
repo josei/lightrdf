@@ -152,7 +152,8 @@ module RDF
         else
           already_serialized << node
           text += ":\n"
-          node.predicates.each do |p, o| # Predicate and object
+          node.predicates.each do |p, o| # Predicate and objects
+            next if o.empty?
             text += " " *(level+1)*2
             text += ID.compress(p.id, ns)
             text += ":"
