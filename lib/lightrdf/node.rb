@@ -88,6 +88,21 @@ module RDF
       end
       self
     end
+
+    def rename new_id=nil
+      clone.rename! new_id
+    end
+    
+    def rename! new_id=nil
+      self.graph.delete id
+      self.id = ID(new_id)
+      self.graph[id] = self
+      self
+    end
+    
+    def clone
+      self.graph.clone[id]
+    end
     
     def bnode?
       ID.bnode?(id)

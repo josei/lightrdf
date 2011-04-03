@@ -98,6 +98,37 @@ class TestLightRDF < Test::Unit::TestCase
     assert_equal 1, [g[Node('ex:bob')].graph.object_id, g[Node('ex:bob')].foaf::weblog.map(&:graph).map(&:object_id)].flatten.uniq.size
   end
 
+  def test_rename
+    a = Node('ex:alice')
+    a.foaf::name = "Alice"
+    b = Node('ex:bob')
+    b.foaf::knows = a
+    a.graph << b
+    a.foaf::knows = b
+    
+    c = a.rename 'ex:ana'
+
+    assert a.graph['ex:alice'].foaf::knows.include?(Node('ex:bob'))
+    assert a.foaf::knows.first.foaf::knows.include?(Node('ex:alice'))
+
+    assert c.graph['ex:ana'].foaf::knows.include?(Node('ex:bob'))
+    assert c.foaf::knows.first.foaf::knows.include?(Node('ex:ana'))
+  end
+  
+  def test_rename!
+    a = Node('ex:alice')
+    a.foaf::name = "Alice"
+    b = Node('ex:bob')
+    b.foaf::knows = a
+    a.graph << b
+    a.foaf::knows = b
+    
+    a.rename! 'ex:ana'
+
+    assert a.graph['ex:ana'].foaf::knows.include?(Node('ex:bob'))
+    assert a.foaf::knows.first.foaf::knows.include?(Node('ex:ana'))
+  end
+
   def test_node_merge
     a = Node('ex:alice')
     a.foaf::name = "Alice"

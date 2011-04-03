@@ -93,6 +93,17 @@ module RDF
       end
     end
     
+    def clone
+      graph = self.class.new
+      each do |id, node|
+        new_node = graph[id]
+        node.each do |predicate, objects|
+          new_node[predicate] = objects.map { |object| object.is_a?(Node) ? graph[object] : object }
+        end
+      end
+      graph
+    end
+    
     def find subject, predicate, object
       # Convert nodes into IDs
       subject   = subject.id   if subject.is_a?(Node)

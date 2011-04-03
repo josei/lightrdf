@@ -58,6 +58,11 @@ module RDF
       @node.id
     end
     
+    # clone method delegated to node
+    def clone
+      node.clone.proxy(rdf_type)
+    end
+    
     def rdf_type
       self.class.instance_variable_get("@rdf_type")
     end
