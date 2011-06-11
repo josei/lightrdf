@@ -104,6 +104,10 @@ module RDF
       graph
     end
     
+    def delete value
+      value.is_a?(Symbol) ? super : super(value.id)
+    end
+    
     def find subject, predicate, object
       # Convert nodes into IDs
       subject   = subject.id   if subject.is_a?(Node)

@@ -1,3 +1,7 @@
+=== 0.3.9 2011-06-11
+
+* Wrapped delete method in RDF::Graph for simple deletion of nodes
+
 === 0.3.8 2011-04-04
 
 * Added renaming of nodes and graph and node cloning
