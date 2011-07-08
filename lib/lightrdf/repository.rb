@@ -44,15 +44,47 @@ module RDF
         graph, context = if args.first.is_a?(Array)
             [args.first.first, args.first.last]
           else
-            [args.first, ""]
+            [args.first, nil]
           end
         
         # Prepares the dir to connect with the repository
-        url = "#{repository_statements_url(@options[:repository])}?context=%3C#{CGI::escape(context)}%3E"
+        url  = "#{repository_statements_url(@options[:repository])}"
+        url += "?context=%3C#{CGI::escape(context)}%3E" if context
         data = graph.serialize :ntriples
 
         # Adds the data to Sesame
         RestClient.post url, data, :content_type=>content_type
+      end
+    end
+    
+    # Performs a query based on turtle syntax and assuming ?q as variable
+    def query string
+      query = ""
+      RDF::ID.ns.each do |prefix, uri|
+        query += "PREFIX #{prefix}: <#{uri}>\n"
+      end
+      query += "SELECT ?q\n"
+      query += "WHERE {#{string}}"
+      
+      results = sparql(query)
+      results.children.first.children[3].children.select { |result| !result.text? }.map do |result|
+        node = result.children[1].children[1]
+        case node.name.to_sym
+        when :uri then
+          Node(node.content)
+        when :bnode then
+          Node("_:#{node.content}")
+        when :literal then
+          node.content
+        end        
+      end
+    end
+
+    # Performs a SPARQL query
+    def sparql query
+      synchronize do
+        url = "#{repository_url(@options[:repository])}?query=#{CGI::escape(query)}"
+        Nokogiri::XML( RestClient.get(url, :content_type=>'application/sparql-results+xml') )
       end
     end
 

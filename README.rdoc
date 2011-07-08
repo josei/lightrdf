@@ -213,7 +213,12 @@ You have three ways of comunicating with Sesame:
     context = "test:context4"
     repository.data = graph, context # Associate graph to "test:context4"
     repository.data = graph # In this case, data has no associated context
-  
+
+- You can easily make SPARQL queries by just typing the "WHERE" part of the statement:
+    
+    repository = RDF::Repository.new
+    repository.query '?q rdfs:label "john"'
+
 == CONTRIBUTORS:
 
 * José Ignacio Fernández

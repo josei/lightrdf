@@ -305,6 +305,15 @@ foaf: http://xmlns.com/foaf/0.1/
     assert contexts.include?("http://test_repository_contexts.org")
   end
 
+  def test_repository_sparql
+    repository = RDF::Repository.new
+    graph = RDF::Graph.new [[Node("http://testuri.org"), Node('rdf:type'), Node('rdf:Class')]]
+    repository.data = graph
+    results = repository.query("?q rdf:type rdf:Class")
+
+    assert_equal [Node("http://testuri.org")], results.uniq
+  end
+
   def test_instantiation
     assert_equal Node("foaf:Person"), Foaf::Person.new.rdf::type.first
     assert_equal Node("foaf:Agent"),  Foaf::Thing.new.rdf::type.first

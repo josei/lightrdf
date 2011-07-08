@@ -1,3 +1,7 @@
+=== 0.4.0 2011-07-08
+
+* SPARQL support in repository
+
 === 0.3.9 2011-06-11
 
 * Wrapped delete method in RDF::Graph for simple deletion of nodes
