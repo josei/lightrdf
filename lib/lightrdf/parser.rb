@@ -95,7 +95,7 @@ module RDF
         if level == base_level
           nodes << if line =~ /\A(".*")\Z/ # Literal
             i += 1
-            ActiveSupport::JSON.decode($1)
+            parse_string($1)
           elsif line =~ /\A(.+):\Z/ # Node with relations
             node = Node(ID($1, ns), graph)
             i, relations = parse_yarf_relations(lines, graph, ns, level+1, i+1)
@@ -122,7 +122,7 @@ module RDF
         if level == base_level
           relations += if line =~ /\A(.+):\s+(".+")\Z/ # Predicate and literal
             i += 1
-            [[Node(ID($1, ns), graph), ActiveSupport::JSON.decode($2)]]
+            [[Node(ID($1, ns), graph), parse_string($2)]]
           elsif line =~ /\A(.+):\s+(.+)\Z/ # Predicate and node
             i += 1
             [[Node(ID($1, ns), graph), Node(ID($2, ns), graph)]]
@@ -226,7 +226,7 @@ module RDF
         end
       when '_' then Node c
       when '"' then
-        ActiveSupport::JSON.decode(c.match(/\A(\".*\")(@\w+)?\Z/).captures.first)
+        parse_string(c.match(/\A(\".*\")(@\w+)?\Z/).captures.first)
       else
         raise Exception, "Parsing error: #{c}"
       end
@@ -242,6 +242,10 @@ module RDF
       @num_tempfile ||= 0
       @num_tempfile  += 1
       File.join(Dir.tmpdir, "lightrdf-#{@num_tempfile}-#{$$}#{Thread.current.object_id}")
+    end
+    
+    def self.parse_string string
+      ActiveSupport::JSON.decode("[#{string}]").first
     end
   end
 end

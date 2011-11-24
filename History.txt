@@ -1,3 +1,7 @@
+=== 0.4.1 2011-11-24
+
+* Update to latest JSON parsing
+
 === 0.4.0 2011-07-08
 
 * SPARQL support in repository
